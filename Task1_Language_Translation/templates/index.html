@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Language Translation Tool</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#172033}
+    main{max-width:850px;margin:40px auto;padding:24px} .panel{background:white;border-radius:18px;padding:28px;box-shadow:0 8px 28px #15223812}
+    h1{margin-top:0;color:#3157c8}p{color:#5b6577}label{font-weight:700;display:block;margin:14px 0 7px}
+    textarea,select{width:100%;padding:12px;border:1px solid #ccd4e0;border-radius:10px;font:inherit}
+    textarea{min-height:130px;resize:vertical}.langs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    button{border:0;background:#3157c8;color:white;padding:12px 18px;border-radius:10px;font-weight:bold;cursor:pointer;margin-top:16px}
+    .result{background:#eef5ff;border-radius:12px;padding:16px;margin-top:20px;white-space:pre-wrap;overflow-wrap:anywhere}
+    .error{background:#fff1f1;color:#a12626;padding:12px;border-radius:10px;margin-top:14px}
+    @media(max-width:600px){main{margin:10px auto;padding:12px}.langs{grid-template-columns:1fr}.panel{padding:20px}}
+  </style>
+</head>
+<body><main><section class="panel">
+  <h1>Language Translation Tool</h1>
+  <p>Enter text, choose the source and target languages, and translate it.</p>
+  <form method="post">
+    <label for="text">Text to translate</label>
+    <textarea id="text" name="text" placeholder="Type your text here..." required>{{ source_text }}</textarea>
+    <div class="langs">
+      <div><label for="source_lang">Source language</label>
+        <select id="source_lang" name="source_lang">
+          {% for name, code in languages.items() %}
+          <option value="{{ code }}" {% if code == source_lang %}selected{% endif %}>{{ name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div><label for="target_lang">Target language</label>
+        <select id="target_lang" name="target_lang">
+          {% for name, code in languages.items() %}
+          <option value="{{ code }}" {% if code == target_lang %}selected{% endif %}>{{ name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <button type="submit">Translate</button>
+  </form>
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  {% if translated %}
+    <div class="result"><strong>Translation</strong><p id="translation">{{ translated }}</p>
+      <button type="button" onclick="copyTranslation()">Copy translation</button>
+      <span id="copy-status" aria-live="polite"></span>
+    </div>
+  {% endif %}
+</section></main>
+<script>
+async function copyTranslation(){
+  const text=document.getElementById('translation').innerText;
+  try{await navigator.clipboard.writeText(text);document.getElementById('copy-status').innerText=' Copied!';}
+  catch(e){document.getElementById('copy-status').innerText=' Please select and copy the text manually.';}
+}
+</script></body></html>
